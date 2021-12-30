@@ -106,44 +106,59 @@ while True:
         elif status == "computer":
             minus_move = '-'
             plus_move = '+'
-            zero_move = '0'
-            move = [minus_move, plus_move, zero_move]
+            #zero_move = '0'
+            #move = [minus_move, plus_move, zero_move]
+            move = [minus_move, plus_move]
+            
+            command = random.choice(move)
+            dictionary = {}
+            for i in range(10):
+                dictionary[i] = 0
+            for elem in (board + computer):
+                for num in elem:
+                    dictionary[num] += 1
+            #print(computer)
+            rate = {}
+            for elem in computer:
+                rate[tuple(sorted(elem))] = dictionary[elem[0]] + dictionary[elem[1]]
+            #print(rate)
+            rate = sorted(rate.items(), key=lambda x: x[1], reverse=True)
+            #print(rate)
+            #max_choice = max(rate, key=lambda x: x[1])
+            #print(max_choice)
             while True:
-                command = random.choice(move)
-                if command == '0':
-                    choice = random.choice(stock)
-                    computer.append(choice)
-                    stock.remove(choice)
-                    status = "player"
-                    break
-                elif command == '+':
-                    choice = random.choice(computer)
-                    if set(choice) & set(board[-1]) == set():
-                        #print("Illegal move. Please try again.")
-                        continue
+                if len(rate) > 0:
+                    #choice = random.choice(computer)
+                    choice = max(rate, key=lambda x: x[1])
+                    print(choice)
+                    if board[-1][1] in choice[0] or board[0][0] in choice[0]:
+                        if board[-1][1] == choice[0][0]:
+                            board.append(list(choice[0]))
+                        elif board[-1][1] == choice[0][1]:
+                            nchoice = list(choice[0])
+                            nchoice.reverse()
+                            board.append(nchoice)
+                        elif board[0][1] == choice[0][1]:
+                            board.insert(0, list(choice[0]))
+                        elif board[0][1] == choice[0][1]:
+                            nchoice = list(choice[0])
+                            nchoice.reverse()
+                            board.insert(0, nchoice)
+                        computer.remove(list(choice[0]))
+                        status = "player"
+                        break
                     else:
-                        if board[-1][1] == choice[0]:
-                            board.append(choice)
-                        else:
-                            choice.reverse()
-                            board.append(choice)
-                    computer.remove(choice)
-                    status = "player"
-                    break
-                elif command == '-':
-                    choice = random.choice(computer)
-                    if set(choice) & set(board[0]) == set():
-                        #print("Illegal move. Please try again.")
+                        rate.remove(choice)
+                       #print(rate)
                         continue
-                    else:
-                        if board[0][1] == choice[1]:
-                            board.insert(0, choice)
-                        else:
-                            choice.reverse()
-                            board.insert(0, choice)
-                    computer.remove(choice)
+                else:
+                    r_choice = random.choice(stock)
+                    #choice = max_choice
+                    computer.append(r_choice)
+                    stock.remove(r_choice)
                     status = "player"
                     break
+                
                     
                 
         else:
