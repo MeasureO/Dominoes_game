@@ -58,40 +58,94 @@ while True:
         print("Status:", "Computer is about to make a move. Press Enter to continue...")
     while True:
         command = input()
-        if status == "player" and command.isnumeric() and int(float(command)) == int(command) and -len(player) <= int(command) <= len(player):
-            command = int(command)
-            if command == 0:
-                choice = random.choice(stock)
-                player.append(choice)
-                stock.remove(choice)
-            elif command > 0:
-                board.append(player[command - 1])
-                del player[command - 1]
+        if status == "player" and int(float(command)) == int(command) and -len(player) <= int(command) <= len(player):
+            while True:
+                command = int(command)
+                if command == 0:
+                    choice = random.choice(stock)
+                    player.append(choice)
+                    stock.remove(choice)
+                    status = "computer"
+                    break
+                elif command > 0:
+                    #if set(player[command - 1]) & set(board[-1]) == set():
+                    if board[-1][1] not in player[command - 1]:
+                        print("Illegal move. Please try again.")
+                        break
+                    else:
+                        if board[-1][1] == player[command - 1][0]:
+                            board.append(player[command - 1])
+                        else:
+                            player[command - 1].reverse()
+                            board.append(player[command - 1])
+                            
+                        del player[command - 1] 
+                    status = "computer"
+                    break 
+                elif command < 0:
+                    command = abs(command)
+                    if board[0][0] not in player[command - 1]:
+                        print("Illegal move. Please try again.")
+                        break
+                    else:
+                        if board[0][0] == player[command - 1][1]:
+                            board.insert(0, player[command - 1])
+                        else:
+                            player[command - 1].reverse()
+                            board.insert(0, player[command - 1])
+                        del player[command - 1]
+                    status = "computer"
+                    break
+                # choice = random.choice(stock)
+                # player.append(choice)
+                # stock.remove(choice)
+                # status = "computer"
+                # break
+            break
                 
-            elif command[0] == '-':
-                board.insert(0, player[command - 1])
-                del player[command - 1]
-            status = "computer"
         elif status == "computer":
             minus_move = '-'
             plus_move = '+'
             zero_move = '0'
             move = [minus_move, plus_move, zero_move]
-            command = random.choice(move)
-            if command == '0':
-                choice = random.choice(stock)
-                computer.append(choice)
-                stock.remove(choice)
-            elif command == '+':
-                choice = random.choice(computer)
-                board.append(choice)
-                computer.remove(choice)
+            while True:
+                command = random.choice(move)
+                if command == '0':
+                    choice = random.choice(stock)
+                    computer.append(choice)
+                    stock.remove(choice)
+                    status = "player"
+                    break
+                elif command == '+':
+                    choice = random.choice(computer)
+                    if set(choice) & set(board[-1]) == set():
+                        #print("Illegal move. Please try again.")
+                        continue
+                    else:
+                        if board[-1][1] == choice[0]:
+                            board.append(choice)
+                        else:
+                            choice.reverse()
+                            board.append(choice)
+                    computer.remove(choice)
+                    status = "player"
+                    break
+                elif command == '-':
+                    choice = random.choice(computer)
+                    if set(choice) & set(board[0]) == set():
+                        #print("Illegal move. Please try again.")
+                        continue
+                    else:
+                        if board[0][1] == choice[1]:
+                            board.insert(0, choice)
+                        else:
+                            choice.reverse()
+                            board.insert(0, choice)
+                    computer.remove(choice)
+                    status = "player"
+                    break
+                    
                 
-            elif command == '-':
-                choice = random.choice(computer)
-                board.insert(0, choice)
-                computer.remove(choice)
-            status = "player"
         else:
             print("Invalid input. Please try again.")
             continue
